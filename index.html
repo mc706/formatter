@@ -1,0 +1,36 @@
+<!doctype html>
+<html ng-app='formatterApp'>
+    <head>
+        <title>File Formatter</title>
+        <link href='assets/css/bootstrap.css' rel=stylesheet>
+    </head>
+    <body style='padding:70px 5px;'>
+        <header role=banner>
+            <div class='navbar navbar-fixed-top navbar-default' role=navigation>
+                <div class='navbar-header'>
+                    <a class='navbar-brand' href='/formatter/' title='File Formatter'>
+                        File Formatter
+                    </a>
+                </div>
+                <div class='collapse navbar-collapse navbar-responsive-collapse'>
+                    <ul class='nav navbar-nav'>
+                        <li><a href='#'>Formatting</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        <div ng-view="">
+            
+        </div>
+
+        <!--Scripts-->
+        <!--Libraries-->
+        <script src="assets/js/vkbeautify.js"></script>
+        <script src='assets/js/angular.js'></script>
+        
+        <!--Application-->
+        <script src='app/app.js'></script>
+        <script src='app/controllers/controllers.js'></script>
+        <script src='app/services/services.js'></script>
+    </body>
+</html>

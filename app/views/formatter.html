@@ -1,0 +1,83 @@
+<div class=row>
+      <div class=col-lg-4>
+        <h3>Input File <small>({{ data.length }})</small></h3>
+        <div style="overflow-y:auto;overflow-x:auto">
+            <table class='table table-bordered table-condensed'>
+              <thead>
+                <tr><th ng-repeat="header in headers">{{header}}</th></tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="line in data">
+                  <td ng-repeat="field in headers">{{line[field]}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+        <br>
+        <textarea ng-model="raw" rows=10 style=width:100% ng-change="loadData()" placeholder="Paste a CSV dump of your data table here..."></textarea>
+      </div>
+      
+      <div class=col-lg-4>
+        <h3>Data Input Requirements <small>({{ totalMatched() }}) matched records of ({{data.length}}) total</small></h3>
+          <div class='panel panel-default' ng-repeat="rcase in cases">
+            <div class=panel-heading>
+              <span class="glyphicon glyphicon-remove pull-right" ng-click=removeCase(rcase) title='Remove Case' style='margin:7px'></span>&nbsp;
+              <span class="glyphicon glyphicon-repeat pull-right" ng-click=cloneCase(rcase) title='Copy Case' style='margin:7px'></span>&nbsp;
+              <h4 class=pull-left>Case <small>({{rcase.matches.length}})</small></h4><br>&nbsp;
+            </div>
+            <div class=panel-body>
+                <div ng-repeat='rule in rcase.rules'>
+                    IF <strong>{{rule.field}}</strong> IS <strong>{{rule.value}}</strong> <span class='glyphicon glyphicon-remove-circle' ng-click="removeRule(rcase,rule)"></span>
+                </div>
+                <form ng-submit="addRule(rcase)" class=form-inline>
+                    IF 
+                    <select ng-model='rcase.field' required ng-options="header for header in headers">
+                        <option style="display:none" value="">select a field</option>
+                    </select> 
+                    IS 
+                    <select ng-model='rcase.value' required ng-options='value for value in getValues(rcase)'>
+                        <option style="display:none" value="">select a value</option>
+                    </select>
+                    <input class='btn btn-primary' type=submit value='Add Clause'>
+                </form>
+                <br>
+                <label>Output:</label>
+                <textarea ng-model=rcase.output style='width:90%;' rows=5 ng-change='processOutput()'></textarea>
+            </div>
+          </div>
+        <button class='btn btn-primary' ng-click='addCase()'>Add Case</button>
+      </div>
+      
+      <div class=col-lg-4>
+          <h3>Output Preview</h3>
+          <pre class='prettyprint'>{{output}}</pre>
+      </div>
+</div>
+<p class=text-center >
+    <button class='btn btn-important' ng-click='toggleCustom()'>Toggle Debug</button>
+    <button class='btn btn-important' ng-click='toggleDemo()'>Toggle Demo</button>
+    <div ng-hide=custom class=text-center>
+        <strong>Cases</strong>:<br>{{cases}}<br><br>
+        <strong>Headers</strong>:<br>{{headers}}<br><br>
+        <strong>Data</strong>:<br>{{data}}<br><br>
+        <strong>Unmatched</strong>:<br>{{unmatched}}
+    </div>
+    <div ng-hide=demo class='text-center row'>
+        <div class='well col-lg-6'>
+            <h4>Demo Data</h4>
+            <pre class=text-left>First Name,Last Name,Phone,Address1,Address2,City,State,Zip,Country,Q1,Q2
+Ryan,McDevitt,6107643534,14 Hilltown Pike,,Line Lexington,PA,18932,USA,X,X
+Kevin,McDevitt,4849020371,1709 Reserve Dr,,Collegeville,PA,19426,USA,,
+Shane,McDevitt,,1709 Reserve Dr,,Collegeville,PA,19426,USA,X,X
+Maria,Casals,4846861043,1709 Reserve DR,,Collegeville,PA,19426,USA,X,
+Bryan,Bonder,,14 Hilltown Pike,,Line Lexington,PA,18932,USA,,X
+Mike,Fox,,345 Freeman School Dr,,Harleysville,PA,19438,USA,X,X
+Don,Langsdorf,,,,,,,,,X
+            </pre>
+        </div>
+        <div class='well col-lg-6'>
+            <h4>Demo Output</h4>
+            <pre class=text-left>{{demoOut}}</pre>
+        </div>
+    </div>
+</p>
