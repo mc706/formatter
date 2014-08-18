@@ -1,18 +1,27 @@
 app.controller('FormatController', function ($scope) {
     "use strict";
 
+    $scope.strip = function (str) {
+        return str.replace(/^\s+|\s+$/g, "");
+    };
+
     $scope.loadData = function () {
         $scope.data = [];
         var data = angular.copy($scope.raw),
-            lines = data.split('\n');
-        $scope.headers = lines[0].split(',');
+            lines = data.split('\n'),
+            headers = lines[0].split(',');
+        $scope.headers = [];
+        angular.forEach(headers, function (header) {
+            $scope.headers.push($scope.strip(header));
+        });
         lines.splice(0, 1);
-        angular.forEach(lines, function (line) {
+        angular.forEach(lines, function (line, k) {
             var fields = line.split(','),
                 temp = {},
                 i;
             for (i = 0; i < $scope.headers.length; i += 1) {
-                temp[$scope.headers[i]] = fields[i];
+                temp[$scope.headers[i]] = $scope.strip(fields[i]);
+                temp.index = k + 1;
             }
             $scope.data.push(temp);
         });
@@ -201,4 +210,5 @@ app.controller('FormatController', function ($scope) {
 </address>\n\
 {[<phone>{[<phoneNumber>{{Phone}}</phoneNumber>]}</phone>]}\n\
 </transaction>";
-});
+})
+;
