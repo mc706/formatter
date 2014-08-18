@@ -134,7 +134,7 @@ app.controller('FormatController', function ($scope) {
             out,
             results,
             k;
-        angular.forEach($scope.cases, function (rcase) {
+        angular.forEach($scope.cases, function (rcase, y) {
             angular.forEach(rcase.matches, function (match, z) {
                 out = rcase.output;
                 while ((results = rx1.exec(out)) !== null) {
@@ -154,8 +154,13 @@ app.controller('FormatController', function ($scope) {
                         out = out.replace(results[0], '');
                     }
                 }
-                if ($scope.outputFormat === "json" && z !== rcase.matches.length - 1) {
-                    out += ',';
+                if ($scope.outputFormat === "json") {
+                    if (z === rcase.matches.length - 1 && y === $scope.cases.length - 1) {
+                        //nothing
+                    } else {
+                        out += ',';
+                    }
+
                 }
                 $scope.output += out;
             });
