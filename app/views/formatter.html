@@ -50,6 +50,8 @@
       
       <div class=col-lg-4>
           <h3>Output Preview</h3>
+          <select ng-options="format for format in formats" ng-model="outputFormat" class="form-control"></select>
+          <br>
           <pre class='prettyprint'>{{output}}</pre>
       </div>
 </div>

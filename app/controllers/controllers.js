@@ -106,9 +106,19 @@ app.controller('FormatController', function ($scope) {
         $scope.processOutput();
     };
 
+    $scope.formats = [
+        'json',
+        'xml'
+    ];
+    $scope.outputFormat = "json";
+
     $scope.output = "";
     $scope.processOutput = function () {
-        $scope.output = '<?xml version="1.0" encoding="UTF-8"?>';
+        if ($scope.outputFormat === "xml") {
+            $scope.output = '<?xml version="1.0" encoding="UTF-8"?>';
+        } else if ($scope.outputFormat === "json") {
+            $scope.output = '[';
+        }
         var rx1 = /{{(.*)}}/g, //replace all {{}} variables
             rx2 = /{\[[^\{\}\[\]]*(>\s?<\/)[^\{\}\[\]]*\]}/g, //Remove optional Lines
             rx3 = /({\[|\]})/g, //clean up rest of tags
@@ -116,7 +126,7 @@ app.controller('FormatController', function ($scope) {
             results,
             k;
         angular.forEach($scope.cases, function (rcase) {
-            angular.forEach(rcase.matches, function (match) {
+            angular.forEach(rcase.matches, function (match, z) {
                 out = rcase.output;
                 while ((results = rx1.exec(out)) !== null) {
                     if (results) {
@@ -135,10 +145,27 @@ app.controller('FormatController', function ($scope) {
                         out = out.replace(results[0], '');
                     }
                 }
+                if ($scope.outputFormat === "json" && z !== rcase.matches.length - 1) {
+                    out += ',';
+                }
                 $scope.output += out;
             });
         });
-        $scope.output = vkbeautify.xml($scope.output, 4);
+        if ($scope.outputFormat === "xml") {
+            try {
+                $scope.output = vkbeautify.xml($scope.output, 4);
+            } catch (err) {
+                //console.warn(err);
+            }
+        } else if ($scope.outputFormat === "json") {
+            $scope.output += ']';
+            try {
+                $scope.output = vkbeautify.json($scope.output, 4);
+            } catch (err) {
+                //console.warn(err);
+            }
+        }
+
     };
 
     $scope.custom = true;
