@@ -117,7 +117,8 @@ app.controller('FormatController', function ($scope) {
 
     $scope.formats = [
         'json',
-        'xml'
+        'xml',
+        'other'
     ];
     $scope.outputFormat = "json";
 
@@ -127,18 +128,28 @@ app.controller('FormatController', function ($scope) {
             $scope.output = '<?xml version="1.0" encoding="UTF-8"?>';
         } else if ($scope.outputFormat === "json") {
             $scope.output = '[';
+        } else if ($scope.outputFormat === "other") {
+            $scope.output = "";
         }
         var rx1 = /{{(.*)}}/g, //replace all {{}} variables
             rx2 = /{\[[^\{\}\[\]]*(>\s?<\/)[^\{\}\[\]]*\]}/g, //Remove optional Lines
-            rx3 = /({\[|\]})/g, //clean up rest of tags
+            rx3 = /{{(\#)}}/g,
+            rx4 = /({\[|\]})/g, //clean up rest of tags
+            n = 0,
             out,
             results,
             k;
         angular.forEach($scope.cases, function (rcase, y) {
             angular.forEach(rcase.matches, function (match, z) {
+                n += 1;
                 out = rcase.output;
-                while ((results = rx1.exec(out)) !== null) {
+                while ((results = rx3.exec(out)) !== null) {
                     if (results) {
+                        out = out.replace(results[0], n);
+                    }
+                }
+                while ((results = rx1.exec(out)) !== null) {
+                    if (results && results[0] !== '#') {
                         out = out.replace(results[0], match[results[1]]);
                     }
                 }
@@ -149,7 +160,7 @@ app.controller('FormatController', function ($scope) {
                         }
                     }
                 }
-                while ((results = rx3.exec(out)) !== null) {
+                while ((results = rx4.exec(out)) !== null) {
                     if (results) {
                         out = out.replace(results[0], '');
                     }
@@ -161,6 +172,8 @@ app.controller('FormatController', function ($scope) {
                         out += ',';
                     }
 
+                } else if ($scope.outputFormat === "other") {
+                    out += '\n'
                 }
                 $scope.output += out;
             });
